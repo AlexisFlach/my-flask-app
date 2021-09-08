@@ -1,14 +1,15 @@
 version: "3.8"
 services: 
   web:
-    container_name: web_container 
+    container_name: webcontainer 
     build: .
     ports:
      - "5000:5000"
-    volumes:
-      - "./:app"
+    networks:
+      flask_app_net: 
+        ipv4_address: 192.168.0.4
   db:
-    container_name: db_container
+    container_name: dbcontainer
     image: postgres:latest
     environment: 
       POSTGRES_DB: mydb
@@ -16,6 +17,34 @@ services:
       POSTGRES_USER: postgres
     volumes: 
       - postgres_data:/var/lib/postgresql/data/
+    networks:
+      flask_app_net: 
+        ipv4_address: 192.168.0.2 
+  pgadmin:
+    container_name: pgadmincontainer
+    image: dpage/pgadmin4
+    depends_on:
+      - db
+    ports: 
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: root@root.com
+      PGADMIN_DEFAULT_PASSWORD: root
+      PGADMIN_LISTEN_ADDRESS: 0.0.0.0
+    volumes: 
+      - ./data/pgadmin-data:/var/lib/pgadmin
+    networks:
+      flask_app_net: 
+        ipv4_address: 192.168.0.3
+
+networks: 
+  flask_app_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: "192.168.0.0/24"
+          gateway: "192.168.0.1"
+ 
 volumes:
   postgres_data:
 
