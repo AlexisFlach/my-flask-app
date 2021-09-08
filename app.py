@@ -27,7 +27,7 @@ class User(db.Model):
   __tablename__ = 'ratings'
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String(200))
-  adress = db.Column(db.t(200))
+  tool = db.Column(db.String(200))
   rating = db.Column(db.Integer)
   comments = db.Column(db.Text())
 
