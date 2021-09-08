@@ -1,3 +1,4 @@
+from re import I
 from flask import Flask, render_template, request
 
 from flask_sqlalchemy import SQLAlchemy
@@ -10,8 +11,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 class Tech(db.Model):
-  __tablename__ = 'rating'
-  id = db.Column(db.integer, primary_key=True)
+  __tablename__ = 'ratings'
+  id = db.Column(db.Integer, primary_key=True)
   user = db.Column(db.String(200))
   tool = db.Column(db.String(200))
   rating = db.Column(db.Integer)
@@ -28,10 +29,20 @@ class Tech(db.Model):
 def index():
   return render_template('home.html', title="My title from App")
 
-@app.route('/submit', methods=['POST'])
+@app.route('/submit', methods=['POST', 'GET'])
 def submit():
-  if(request.method == 'POST'):
-    print("posted")
+  if request.method == 'GET':
+    return render_template('form.html')
+  if request.method == 'POST' :
+    user = request.form['user']
+    tool = request.form['tool']
+    rating = request.form['rating']
+    comments = request.form['comments']
+    data = Tech(user, tool, rating, comments)
+    db.session.add(data)
+    db.session.commit()
+    return render_template('index.html')
+
   
 if __name__ == '__main__':
   app.run(debug=True, host='0.0.0.0')
