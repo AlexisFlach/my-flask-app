@@ -1,11 +1,10 @@
-from re import I
 from flask import Flask, render_template, request
 
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__, template_folder='./templates')
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/lektiondb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -15,6 +14,20 @@ class Tech(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   user = db.Column(db.String(200))
   tool = db.Column(db.String(200))
+  rating = db.Column(db.Integer)
+  comments = db.Column(db.Text())
+
+  def __init__(self, user, tool, rating, comments):
+      self.user = user
+      self.tool = tool
+      self.rating = rating
+      self.comments = comments
+
+class User(db.Model):
+  __tablename__ = 'ratings'
+  id = db.Column(db.Integer, primary_key=True)
+  name = db.Column(db.String(200))
+  adress = db.Column(db.t(200))
   rating = db.Column(db.Integer)
   comments = db.Column(db.Text())
 
@@ -41,7 +54,7 @@ def submit():
     data = Tech(user, tool, rating, comments)
     db.session.add(data)
     db.session.commit()
-    return render_template('index.html')
+    return render_template('home.html')
 
   
 if __name__ == '__main__':
