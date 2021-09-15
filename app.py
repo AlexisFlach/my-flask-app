@@ -4,39 +4,18 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__, template_folder='./templates')
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@db:5432/mydb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-class Tech(db.Model):
+class Student(db.Model):
   __tablename__ = 'myratings'
   id = db.Column(db.Integer, primary_key=True)
-  user = db.Column(db.String(200))
-  tool = db.Column(db.String(200))
-  rating = db.Column(db.Integer)
-  comments = db.Column(db.Text())
-
-  def __init__(self, user, tool, rating, comments):
-      self.user = user
-      self.tool = tool
-      self.rating = rating
-      self.comments = comments
-
-class User(db.Model):
-  __tablename__ = 'ratings'
-  id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String(200))
-  tool = db.Column(db.String(200))
-  rating = db.Column(db.Integer)
-  comments = db.Column(db.Text())
 
-  def __init__(self, user, tool, rating, comments):
-      self.user = user
-      self.tool = tool
-      self.rating = rating
-      self.comments = comments
-
+  def __init__(self, name):
+      self.name = name
 
 @app.route('/')
 def index():
@@ -47,11 +26,8 @@ def submit():
   if request.method == 'GET':
     return render_template('form.html')
   if request.method == 'POST' :
-    user = request.form['user']
-    tool = request.form['tool']
-    rating = request.form['rating']
-    comments = request.form['comments']
-    data = Tech(user, tool, rating, comments)
+    name = request.form['name']
+    data = Student(name)
     db.session.add(data)
     db.session.commit()
     return render_template('home.html')
